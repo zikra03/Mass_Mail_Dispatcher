@@ -1,0 +1,297 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <title>Send Mail</title>
+  <script src="https://cdn.emailjs.com/dist/email.min.js"></script>
+  <link rel="stylesheet" href="style.css">
+  <link href="https://fonts.googleapis.com/css?family=Raleway:200,100,400" rel="stylesheet" type="text/css" />
+</head>
+
+<body>
+  <div class="topnav">
+    <a href="#default" class="Title">Mass Mail Dispatcher</a>
+    <div class="header-right">
+      <a class="active" href="">Exposys Data Labs</a>
+    </div>
+  </div>
+  <img src="massmail.png" alt="Mass Mail Dispatcher" class="left">
+  <form method="post">
+    <label for="senderEmail">From :</label><br>
+    <input type="email" id="senderEmail" name="senderEmail" style="height: 30px;" required><br>
+    <label for="subject">Subject :</label><br>
+    <textarea id="subject" name="subject" style="height: 50px; width: 300px;"></textarea><br>
+
+    <label for="csvFile">CSV File :</label><br>
+    <input type="file" id="csvFile" name="csvFile" accept=".csv" required> <br>
+    <label for="message">Message:</label><br>
+    <textarea id="message" name="message" style="height: 50px; width: 300px;" required></textarea><br>
+
+    <input type="button" value="Send Emails" style="font-weight: bold;" onclick="sendEmails()"><br>
+
+    <div style="display:flex">
+      <div>
+        <p style="font-size: 20px; color: forestgreen">Valid Emails: <span id="validEmailCount"></span></p>
+        <div id="validEmails" style="float: left"></div>
+      </div>
+      <div style="margin-left: 15px">
+        <p style="font-size:20px ;color: firebrick">Invalid Emails: <span id="invalidEmailCount"></span></p>
+        <div id="invalidEmails" style="float: left"></div>
+      </div>
+    </div>
+  </form>
+
+  <script type="text/javascript">
+    (function () {
+      emailjs.init("JHgyTlBO-1NTDbu9Y");
+    })();
+
+    function sendEmails() {
+      var senderEmail = document.getElementById("senderEmail").value;
+      var message = document.getElementById("message").value;
+      var subject = document.getElementById("subject").value;
+
+      var validEmails = [];
+      var invalidEmails = [];
+
+      // Read contents of CSV file
+      var file = document.getElementById("csvFile").files[0];
+      var reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = function (event) {
+        var csv = event.target.result;
+        var lines = csv.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var email = lines[i].trim();
+          var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,3}$/
+            ;
+          if (emailRegex.test(email)) {
+            validEmails.push(email);
+          } else {
+            invalidEmails.push(email);
+          }
+        }
+        // Send email to valid email addresses
+        for (var j = 0; j < validEmails.length; j++) {
+          var templateParams = {
+            to_name: validEmails[j],
+            from_name: senderEmail,
+            message_html: message,
+            subject_html: subject
+          };
+          emailjs.send('service_f71tj2q', 'template_1ud0gnn', templateParams)
+            .then(function (response) {
+              console.log("SUCCESS", response);
+            }, function (error) {
+              console.log("FAILED", error);
+            });
+        }
+
+        alert("Emails sent to valid email addresses.");
+      };
+    }
+
+  </script>
+  <script type="text/javascript">
+    document.getElementById("csvFile").addEventListener("change", function () {
+      var validEmails = [];
+      var invalidEmails = [];
+
+      // Read contents of CSV file
+      var file = document.getElementById("csvFile").files[0];
+      var reader = new FileReader();
+      reader.readAsText(file);
+      reader.onload = function (event) {
+        var csv = event.target.result;
+        var lines = csv.split('\n');
+        for (var i = 0; i < lines.length; i++) {
+          var email = lines[i].trim();
+          var emailRegex = /^[\w-\.]+@([\w-]+\.)+[\w-]{2,3}$/
+            ;
+          if (emailRegex.test(email)) {
+            validEmails.push(email);
+          } else {
+            invalidEmails.push(email);
+          }
+        }
+
+        // Display valid and invalid emails
+        document.getElementById("validEmails").innerHTML = validEmails.join("<br><br>");
+        document.getElementById("invalidEmails").innerHTML = invalidEmails.join("<br><br>");
+        document.getElementById("validEmailCount").innerText = "(" + validEmails.length + ")";
+        document.getElementById("invalidEmailCount").innerText = "(" + invalidEmails.length + ")";
+      };
+    });
+  </script>
+  <div class="footer-basic">
+    <footer>
+      <p class="copyright">Zikra Siddiqui</p>
+    </footer>
+  </div>
+</body>
+
+</html>
+
+
+
+
+*{
+  /*border: 1px solid red; */
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  font-family:Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+}
+.fa-solid {
+  color:yellow;
+}
+.valinval {
+  color: turquoise;
+}
+body{
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  background: linear-gradient(to top left,turquoise,lemonchiffon);
+  font-size: medium;
+}
+
+.topnav {
+  background-color:black;
+  overflow: hidden;
+}
+.topnav a {
+  float: left;
+  color:white;
+  text-align: center;
+  padding: 14px 16px;
+  text-decoration: none;
+  font-size: 30px;
+}
+.topnav a:hover {
+  background-color:lemonchiffon;
+  color: black;
+}
+.topnav a.active {
+  background-color: white;
+  color: black;
+}
+.header-right {
+  float: right;
+  font-size: 10px;
+}
+
+.container{
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  height: 100vh;
+  flex-wrap: wrap;
+}
+
+select{
+  display: flex;
+  flex-direction: column;
+}
+#box-heading{
+  padding: 5px;
+  margin:auto;
+ 
+}
+.left {
+  width:200px;
+  height:300px;
+}
+/* Style the form container */
+form {
+  height: 600px;
+  max-width: 500px;
+  margin-left: 52em;
+  margin-top: 1em;
+  /* From https://css.glass */
+  background:lemonchiffon;
+  border: black;
+  backdrop-filter: blur(2.7px);
+  -webkit-backdrop-filter: blur(2.7px);
+  padding: 16px;
+  border-radius: 20px; 
+  position: relative;
+  font-size: medium;
+}
+
+/* Style file input */
+input[type="file"] {
+  margin-bottom: 12px;
+  color: red;
+  
+}
+
+/* Style form submit button */
+input[type="button"] {
+  background: teal;
+  color: white;
+  border: 2px solid black;
+  font-size:17px;
+  letter-spacing:2px;
+  padding:10px 40px;
+  text-transform:uppercase;
+  cursor:pointer;
+  display:inline-block;
+  margin: 15px 30px;
+  -webkit-transition:all 0.4s;
+  -moz-transition: all 0.4s;
+  transition: all 0.4s;
+  box-shadow: 0 1px 1px black;
+}
+
+/* Style submit button on hover */
+input[type="button"]:hover {
+  color:black;
+  background-color:yellow;
+}
+
+/* Style container for valid and invalid emails */
+#validEmails {
+  margin-top: 1px;
+}
+#invalidEmails {
+  margin-top: 1px;
+  
+}
+
+#message{
+  color:black;
+}
+#senderEmail{
+  color:black;
+}
+
+/* Style text inputs and text areas */
+input[type="email"]:focus,
+textarea:focus {
+  outline: none !important;
+  border-color: #393d40;
+ 
+}
+#validEmails, #invalidEmails {
+  height: 150px;
+  overflow: auto;
+}
+.left{
+  height:300px;
+  width: 300px;
+  margin-top:12em;
+  position: absolute;
+  margin-left: 13.3em;
+  }
+
+.footer-basic .copyright{
+  margin-top: 35px;
+  width: 100%;
+  height: 20px;
+  text-align: center;
+  font-size: 18px;
+  background-color: black;
+  color:white;
+  margin-bottom: 0;
+}
